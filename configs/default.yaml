@@ -1,0 +1,36 @@
+
+data:
+  root: data/CUB_200_2011
+  image_size: 224
+  num_workers: 4
+  classes_num: 200
+
+train:
+  batch_size: 64
+  learning_rate: 0.0001
+  backbone_learning_rate: null
+  head_learning_rate: null
+  proxy_learning_rate: null
+  scheduler: step
+  scheduler_step_size: 10
+  scheduler_gamma: 0.2
+  scheduler_min_lr: 0.000001
+  epochs: 18
+  margin: 0.2
+  seed: 42
+  sampler_k: 2
+  sampler_p: 16
+  loss_method: proxyNCA
+  weight_decay: 0.0
+
+model:
+  embedding_dim: 256
+
+paths:
+  checkpoint_dir: checkpoints
+  results_dir: results
+
+runtime:
+  device: auto
+  log_every_steps: 10
+ 
