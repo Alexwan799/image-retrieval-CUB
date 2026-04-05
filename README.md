@@ -46,6 +46,7 @@ Representative qualitative examples generated with the current best checkpoint:
 | --- | --- |
 | Clean same-species retrieval | ![White-breasted nuthatch success](assets/readme/success_white_breasted_nuthatch.png) |
 | Strong same-species cluster with one near-neighbor miss at rank 5 | ![Olive-sided flycatcher success](assets/readme/success_olive_sided_flycatcher.png) |
+| Context-driven color bias on a red feeder scene | ![Rufous hummingbird to tanager confusion](assets/readme/failure_context_color_bias.png) |
 | Fine-grained confusion inside a visually similar seabird group | ![Albatross confusion](assets/readme/failure_albatross_confusion.png) |
 | Severe semantic failure on a difficult query | ![Cuckoo to waxwing confusion](assets/readme/failure_cuckoo_waxwing_confusion.png) |
 
