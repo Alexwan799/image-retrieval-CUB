@@ -13,6 +13,42 @@ Fine-grained image retrieval experiments on CUB-200-2011 using a ResNet50 embedd
 - mAP: `0.6442`
 - Recall@1: `0.7206`
 
+## Experiments
+
+The table below summarizes the main turning points instead of every trial. The goal is to show how the project moved from a plain triplet baseline to the current best ProxyNCA recipe.
+
+| Setting | Loss | embed_dim | lr | mAP | Recall@1 |
+| --- | --- | --- | --- | --- | --- |
+| Triplet baseline | Triplet | 128 | 1e-4 | 0.5474 | 0.7095 |
+| First strong ProxyNCA run | ProxyNCA | 64 | 1e-4 | 0.6022 | 0.6938 |
+| Better overall ranking | ProxyNCA | 128 | 1e-4 | 0.6148 | 0.7047 |
+| Best pre-normalization recipe | ProxyNCA | 256 | 1e-4 | 0.6200 | 0.6949 |
+| Add ImageNet normalization | ProxyNCA + scheduler | 256 | 1e-4 | 0.6284 | 0.7061 |
+| Current best (`p=16, k=2`) | ProxyNCA + scheduler | 256 | 1e-4 | **0.6442** | **0.7206** |
+
+Key lessons from these experiments:
+
+- Switching from Triplet to ProxyNCA gave the biggest jump in retrieval mAP.
+- Aligning input preprocessing with the ImageNet-pretrained backbone was a real win, not a cosmetic cleanup.
+- PK sampler structure mattered a lot: `p=16, k=2` outperformed both the old `8x4` recipe and later larger-batch variants.
+
+## Failure Case Analysis
+
+Typical failure modes looked like this:
+
+1. Background bias: the model sometimes latched onto sky, water, branches, or feeders instead of the bird itself.
+2. Lighting and color shift: the same species under different illumination could look surprisingly different in embedding space.
+3. Fine-grained confusion: closely related species with very small visual differences remained genuinely hard even for humans.
+
+Representative qualitative examples generated with the current best checkpoint:
+
+| Case | Example |
+| --- | --- |
+| Clean same-species retrieval | ![White-breasted nuthatch success](assets/readme/success_white_breasted_nuthatch.png) |
+| Strong same-species cluster with one near-neighbor miss at rank 5 | ![Olive-sided flycatcher success](assets/readme/success_olive_sided_flycatcher.png) |
+| Fine-grained confusion inside a visually similar seabird group | ![Albatross confusion](assets/readme/failure_albatross_confusion.png) |
+| Severe semantic failure on a difficult query | ![Cuckoo to waxwing confusion](assets/readme/failure_cuckoo_waxwing_confusion.png) |
+
 ## Repository Layout
 
 - `src/`: training, evaluation, model, dataset, sampler, and visualization code
