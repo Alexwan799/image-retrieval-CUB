@@ -36,7 +36,7 @@ Key lessons from these experiments:
 
 Typical failure modes looked like this:
 
-1. Background bias: the model sometimes latched onto sky, water, branches, or feeders instead of the bird itself.
+1. Context-driven color bias: the model sometimes over-weighted scene and color cues. A good example was a Rufous Hummingbird query near a red feeder being retrieved as Summer/Scarlet Tanager-style red birds.
 2. Lighting and color shift: the same species under different illumination could look surprisingly different in embedding space.
 3. Fine-grained confusion: closely related species with very small visual differences remained genuinely hard even for humans.
 
