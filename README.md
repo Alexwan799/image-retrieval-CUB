@@ -1,6 +1,6 @@
 # Image Retrieval on CUB-200-2011
 
-Fine-grained image retrieval experiments on CUB-200-2011 using a ResNet50 embedding model, ProxyNCA loss, PK sampling, and retrieval metrics such as Recall@K and mAP.
+This is my bird image retrieval project on CUB-200-2011. I started with a simple Triplet Loss baseline, then tried ProxyNCA, better preprocessing, and different PK sampler settings, and finally got the current best result below.
 
 ## Current Best Result
 
@@ -15,7 +15,7 @@ Fine-grained image retrieval experiments on CUB-200-2011 using a ResNet50 embedd
 
 ## Experiments
 
-The table below summarizes the main turning points instead of every trial. The goal is to show how the project moved from a plain triplet baseline to the current best ProxyNCA recipe.
+This table does not list every single run. It only keeps the main turning points, so it is easier to see how the project moved from the first baseline to the current best setup.
 
 | Setting | Loss | embed_dim | lr | mAP | Recall@1 |
 | --- | --- | --- | --- | --- | --- |
@@ -26,29 +26,29 @@ The table below summarizes the main turning points instead of every trial. The g
 | Add ImageNet normalization | ProxyNCA + scheduler | 256 | 1e-4 | 0.6284 | 0.7061 |
 | Current best (`p=16, k=2`) | ProxyNCA + scheduler | 256 | 1e-4 | **0.6442** | **0.7206** |
 
-Key lessons from these experiments:
+What mattered most:
 
-- Switching from Triplet to ProxyNCA gave the biggest jump in retrieval mAP.
-- Aligning input preprocessing with the ImageNet-pretrained backbone was a real win, not a cosmetic cleanup.
-- PK sampler structure mattered a lot: `p=16, k=2` outperformed both the old `8x4` recipe and later larger-batch variants.
+- Switching from Triplet to ProxyNCA gave the biggest improvement.
+- Adding proper ImageNet normalization also helped a lot.
+- PK sampler settings mattered more than I expected. `p=16, k=2` worked much better than the older `8x4` setup.
 
 ## Failure Case Analysis
 
-Typical failure modes looked like this:
+The model still makes mistakes in a few common ways:
 
-1. Context-driven color bias: the model sometimes over-weighted scene and color cues. A good example was a Rufous Hummingbird query near a red feeder being retrieved as Summer/Scarlet Tanager-style red birds.
-2. Lighting and color shift: the same species under different illumination could look surprisingly different in embedding space.
-3. Fine-grained confusion: closely related species with very small visual differences remained genuinely hard even for humans.
+1. Background or scene bias: sometimes the model pays too much attention to the environment. A Rufous Hummingbird near a red feeder can get matched to red tanager-like birds instead.
+2. Pose and crop changes: even for the same species, very different body pose or image framing can make retrieval worse.
+3. Very similar species: some bird classes are just extremely close visually, so confusion is still common.
 
-Representative qualitative examples generated with the current best checkpoint:
+Some example retrieval results from the current best checkpoint:
 
 | Case | Example |
 | --- | --- |
-| Clean same-species retrieval | ![White-breasted nuthatch success](assets/readme/success_white_breasted_nuthatch.png) |
-| Strong same-species cluster with one near-neighbor miss at rank 5 | ![Olive-sided flycatcher success](assets/readme/success_olive_sided_flycatcher.png) |
-| Context-driven color bias on a red feeder scene | ![Rufous hummingbird to tanager confusion](assets/readme/failure_context_color_bias.png) |
-| Fine-grained confusion inside a visually similar seabird group | ![Albatross confusion](assets/readme/failure_albatross_confusion.png) |
-| Severe semantic failure on a difficult query | ![Cuckoo to waxwing confusion](assets/readme/failure_cuckoo_waxwing_confusion.png) |
+| Mostly correct retrieval | ![White-breasted nuthatch success](assets/readme/success_white_breasted_nuthatch.png) |
+| Good retrieval with one near miss | ![Olive-sided flycatcher success](assets/readme/success_olive_sided_flycatcher.png) |
+| Background/color bias example | ![Rufous hummingbird to tanager confusion](assets/readme/failure_context_color_bias.png) |
+| Similar seabird confusion | ![Albatross confusion](assets/readme/failure_albatross_confusion.png) |
+| Bad failure case | ![Cuckoo to waxwing confusion](assets/readme/failure_cuckoo_waxwing_confusion.png) |
 
 ## Repository Layout
 
